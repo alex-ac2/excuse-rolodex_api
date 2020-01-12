@@ -12,6 +12,18 @@ export default (app) => {
     return res.json(allExcuses).status(200);
   });
 
+  route.get('/:category', async (req, res) => {
+    console.log('Request params: ', req.params);
+
+    const excuseObject = await ExcuseService.getExcusesByCategory(req.params.category);
+
+    if (excuseObject.excuse === null) {
+      return res.json(excuseObject.statusMessage).status(200);
+    }
+    
+    return res.json(excuseObject.excuse).status(200);
+  })
+
   route.post('/', async (req, res) => {
     const excuseBody = req.body.excuse;
     // console.log(req.body);

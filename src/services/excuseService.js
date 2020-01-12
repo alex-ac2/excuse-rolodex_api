@@ -50,6 +50,25 @@ class ExcuseService {
     return result.rows;   
   }
 
+  async getExcusesByCategory(category) {
+    const entry = { 
+      excuse: null,
+      statusMessage: null,
+    };
+
+    if (activeCategories.indexOf(category) === -1) {
+      entry.statusMessage = "Category is not supported";
+      return entry;
+    }
+    const result = await db.query({
+      text: 'SELECT id, caption, category, unique_rating, approved, rejected FROM excuses WHERE category = $1',
+      values: [category],
+    });
+    
+    entry.excuse = result.rows;
+    return entry;
+  }
+
   async validateUniqueness(caption, category) {
     const excusePool = await db.query({
       text: 'SELECT * FROM excuses WHERE category = $1',
