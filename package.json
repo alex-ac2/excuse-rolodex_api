@@ -1,0 +1,59 @@
+{
+  "name": "excuse-rolodex_api",
+  "version": "0.1.0",
+  "description": "ExcuseRolodex API endpoint",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --exec babel-node src/server.js",
+    "local": "nodemon --exec babel-node --watch src src/server.js",
+    "dbs": "docker-compose up -d",
+    "migrate": "db-migrate --env development --config ./src/db/database.js --migrations-dir ./src/db/migrations",
+    "postgres-cli": "psql -h localhost -p 2346 -U db_developer -d excuse-rolodex_dev"
+  },
+  "keywords": [
+    "node.js",
+    "node",
+    "javascript",
+    "excuse",
+    "rolodex",
+    "postgres",
+    "api",
+    "backend"
+  ],
+  "author": "alex-ac2",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-redis": "^4.0.3",
+    "cors": "^2.8.5",
+    "db-migrate": "^0.11.6",
+    "db-migrate-pg": "^1.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^2.6.0",
+    "npm": "^6.13.4",
+    "pg": "^7.14.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "string-similarity": "^4.0.1",
+    "uuid": "^3.3.3",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/node": "^7.7.4",
+    "@babel/plugin-proposal-export-default-from": "^7.7.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.5",
+    "@babel/preset-env": "^7.7.6",
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "nodemon": "^2.0.1",
+    "prettier": "^1.19.1"
+  }
+}
