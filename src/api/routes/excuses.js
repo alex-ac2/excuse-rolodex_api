@@ -17,11 +17,11 @@ export default (app) => {
 
     const excuseObject = await ExcuseService.getExcusesByCategory(req.params.category);
 
-    if (excuseObject.excuse === null) {
+    if (excuseObject.excuseArray === null) {
       return res.json(excuseObject.statusMessage).status(200);
     }
     
-    return res.json(excuseObject.excuse).status(200);
+    return res.json(excuseObject.excuseArray).status(200);
   })
 
   route.post('/', async (req, res) => {

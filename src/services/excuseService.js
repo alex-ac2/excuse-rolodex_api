@@ -23,13 +23,13 @@ class ExcuseService {
       return entry;
     }
 
-    const { uniqueRating, similarCaption } = await this.validateUniqueness(caption, category);
+    const { uniqueRating, similarCaption, similarCaptionId } = await this.validateUniqueness(caption, category);
     console.log('Unique_rating', uniqueRating);
 
     if (uniqueRating > 0.50) {
       const result = await db.query({
-        text: 'INSERT INTO excuses(id, caption, category, user_id, unique_rating) VALUES($1, $2, $3, $4, $5) RETURNING *',
-        values: [generateRandomId(), caption, category, userId, uniqueRating],
+        text: 'INSERT INTO excuses(id, caption, category, user_id, unique_rating, similar_caption_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
+        values: [generateRandomId(), caption, category, userId, uniqueRating, similarCaptionId],
       });
   
       entry.excuse = result.rows[0]
@@ -53,6 +53,7 @@ class ExcuseService {
   async getExcusesByCategory(category) {
     const entry = { 
       excuse: null,
+      excuseArray: null,
       statusMessage: null,
     };
 
@@ -65,33 +66,47 @@ class ExcuseService {
       values: [category],
     });
     
-    entry.excuse = result.rows;
+    entry.excuseArray = result.rows;
     return entry;
   }
 
   async validateUniqueness(caption, category) {
-    const excusePool = await db.query({
-      text: 'SELECT * FROM excuses WHERE category = $1',
-      values: [category],
-    });
+    const { excuseArray } = await this.getExcusesByCategory(category);
 
-    const targetCaptions = excusePool.rows.map((entry) => entry.caption);
 
-    if (targetCaptions.length < 1) {
-      return { unique_rating: 1.0, similarCaption: 'First entry' };
+    const targetCaptionsObject = {};
+    
+    excuseArray.forEach((entry) => {
+      targetCaptionsObject[entry.caption] = entry;
+    })
+    
+    const targetCaptions = Object.keys(targetCaptionsObject);
+    // const targetCaptions = excuseArray.map((entry) => entry.caption);
+
+    if (targetCaptions.length < 1 || excuseArray < 1) {
+      return { uniqueRating: 1.0, similarCaption: 'First entry', similarCaptionId: null };
     }
     
     const matches = await stringSimilarity.findBestMatch(caption, targetCaptions);
 
     if (matches.bestMatch.rating > 0.70) {
       console.log('Caption not very unique');
-    } 
+    }
+
+    const similarCaption = matches.bestMatch.target;
+    const similarCaptionId = targetCaptionsObject[similarCaption].id;
     
-    return { uniqueRating: 1.0 - matches.bestMatch.rating, similarCaption: matches.bestMatch.target };
+    return { uniqueRating: 1.0 - matches.bestMatch.rating, similarCaption, similarCaptionId };
   }
 
   async getRandomExcuse() {
     const excuses = await this.getAllExcuses();
+
+    console.log('Excuses', typeof excuses, excuses.length);
+
+    if (excuses.length < 1 || excuses.length === undefined) {
+      return 'There are currently no excuses in the database. Please submit one!'  
+    } 
 
     return excuses[Math.floor(Math.random() * (excuses.length))].caption;
   }

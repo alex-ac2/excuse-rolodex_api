@@ -21,6 +21,7 @@ exports.up = function(db) {
     category: 'string',
     user_id: 'string',
     unique_rating: 'float',
+    similar_caption_id: 'string',
     approved: 'boolean',
     rejected: 'boolean',
   });
